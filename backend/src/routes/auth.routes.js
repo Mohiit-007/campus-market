@@ -4,7 +4,7 @@ const {
     registeruser, refreshToken, logoutuser,
     logoutAlluser, loginUser, getuser,
     resendOtp, verifyemail, googleAuthCallback             
-} = require("../controllers/user.controllers")
+} = require("../controllers/auth.controllers")
 const passport = require("../config/passport.config");
 
 const {loginLimiter, otpLimiter} = require("../middleware/rate.limits");
