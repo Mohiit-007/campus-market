@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        input { padding: 8px; margin: 5px; }
+        button { padding: 8px 12px; margin: 5px; cursor: pointer; }
+        #messages { 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            height: 300px; 
+            overflow-y: scroll;
+            margin-top: 10px;
+            background: #f9f9f9;
+        }
+        p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h2>Socket.IO Chat Test</h2>
+
+    <input id="token" placeholder="Paste access token here" style="width:400px"/>
+    <br/>
+    <input id="conversationId" placeholder="Paste conversation ID here" style="width:300px"/>
+    <br/>
+    <button onclick="connect()">Connect</button>
+    <button onclick="joinRoom()">Join Conversation</button>
+    <br/><br/>
+
+    <input id="message" placeholder="Type a message here" style="width:300px"/>
+    <button onclick="sendMessage()">Send</button>
+
+    <div id="messages"></div>
+
+    <script>
+        let socket;
+
+        function connect() {
+            const token = document.getElementById('token').value;
+
+            socket = io('http://localhost:8000', {
+                auth: { token }
+            });
+
+            socket.on('connect', () => {
+                log('✅ Connected to server with ID: ' + socket.id);
+            });
+
+            socket.on('connect_error', (err) => {
+                log('❌ Connection failed: ' + err.message);
+            });
+
+            socket.on('receive_message', (data) => {
+                log('📩 New message from ' + data.sender + ': ' + data.content);
+            });
+
+            socket.on('messages_read', (data) => {
+                log('👁️ Messages read in conversation: ' + data.conversationId);
+            });
+
+            socket.on('error', (data) => {
+                log('❌ Error: ' + data.msg);
+            });
+
+            socket.on('disconnect', () => {
+                log('🔌 Disconnected from server');
+            });
+        }
+
+        function joinRoom() {
+            const conversationId = document.getElementById('conversationId').value;
+            if (!socket) {
+                log('❌ Connect first before joining');
+                return;
+            }
+            socket.emit('join_conversation', conversationId);
+            log('🚪 Joined conversation room: ' + conversationId);
+        }
+
+        function sendMessage() {
+            const conversationId = document.getElementById('conversationId').value;
+            const content = document.getElementById('message').value;
+
+            if (!socket) {
+                log('❌ Connect first');
+                return;
+            }
+            if (!content) {
+                log('❌ Type a message first');
+                return;
+            }
+
+            socket.emit('send_message', { conversationId, content });
+            log('📤 You sent: ' + content);
+
+            // clear the input after sending
+            document.getElementById('message').value = '';
+        }
+
+        function log(msg) {
+            const div = document.getElementById('messages');
+            const time = new Date().toLocaleTimeString();
+            div.innerHTML += '<p>[' + time + '] ' + msg + '</p>';
+            div.scrollTop = div.scrollHeight;
+        }
+    </script>
+</body>
+</html>
