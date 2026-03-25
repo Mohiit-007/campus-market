@@ -8,7 +8,11 @@ const messagemodel = require("../model/message.model");
 async function getOrCreateConversation(req, res) {
     try {
         const { productId, sellerId } = req.body;
-        const buyerId = req.user.id; // comes from JWT token
+        const buyerId = req.user?.id; // comes from JWT token
+
+        if (!productId || !sellerId || !buyerId) {
+            return res.status(400).json({ msg: "Missing required fields (productId or sellerId)" });
+        }
 
         // ✅ Prevent a seller from chatting with themselves
         if (buyerId.toString() === sellerId.toString()) {

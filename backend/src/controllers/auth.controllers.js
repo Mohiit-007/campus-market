@@ -153,7 +153,7 @@ async function refreshToken(req,res){
 
         res.cookie("refreshtoken", newRefreshToken, {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
@@ -259,7 +259,7 @@ async function loginUser(req,res){
 
         res.cookie("refreshtoken", refreshtoken, {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
@@ -348,7 +348,7 @@ async function verifyemail(req,res){
 
         res.cookie("refreshtoken", refreshtoken, {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
@@ -414,7 +414,7 @@ async function googleAuthCallback(req, res) {
 
         res.cookie("refreshtoken", refreshtoken, {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
